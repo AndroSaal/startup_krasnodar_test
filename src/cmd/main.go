@@ -1,8 +1,10 @@
 package main
 
 import (
+	"github.com/startup_krasnodar_test/src/internal"
 	"github.com/startup_krasnodar_test/src/pkg/config"
 	mylog "github.com/startup_krasnodar_test/src/pkg/log"
+	"github.com/startup_krasnodar_test/src/transport"
 )
 
 func main() {
@@ -16,8 +18,15 @@ func main() {
 	logger.Info("Logger initialized")
 
 	//TODO: Описать сервер, инициализировать, добавить хендлеры
-	
 
+	service := internal.NewAuth()
+	handlers := transport.NewHandler(service)
+	server, err := transport.NewServer(config.SrvConfig, handlers.InitRoutes(), logger)
+	if err != nil {
+		logger.Error(err.Error())
+	}
+
+	server.MustRun()
 
 	//TODO: Описать БД, инициализировать
 

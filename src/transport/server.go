@@ -14,7 +14,7 @@ type Server struct {
 }
 
 // создание нового сервера
-func NewServer(cfg *config.SrvConfig, handler http.Handler, logger *slog.Logger) (*Server, error) {
+func NewServer(cfg config.SrvConfig, handler http.Handler, logger *slog.Logger) (*Server, error) {
 	server := &http.Server{
 		Addr:           ":" + cfg.Port,
 		Handler:        handler,
