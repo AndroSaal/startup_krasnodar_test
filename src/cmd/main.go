@@ -6,6 +6,8 @@ import (
 )
 
 func main() {
+
+	// инициализируем конфиг, загружаем его
 	config := config.MustLoadConfig()
 	// fmt.Println(config.DBConfig, config.SrvConfig)
 
@@ -14,6 +16,8 @@ func main() {
 	logger.Info("Logger initialized")
 
 	//TODO: Описать сервер, инициализировать, добавить хендлеры
+	
+
 
 	//TODO: Описать БД, инициализировать
 
