@@ -29,6 +29,7 @@ func NewServer(cfg *config.SrvConfig, handler http.Handler, logger *slog.Logger)
 	}, nil
 }
 
+// запуск сервера
 func (s *Server) MustRun() {
 	fi := "transport.Server.MustRun"
 
@@ -38,6 +39,7 @@ func (s *Server) MustRun() {
 	}
 }
 
+// остановка сервера
 func (s *Server) Stop(ctx context.Context) {
 	fi := "transport.Server.Stop"
 
