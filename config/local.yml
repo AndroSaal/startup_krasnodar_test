@@ -11,3 +11,7 @@ server:
   host: "localhost"
   env: "local"
   timeout: "10h"
+
+mail:
+  host: "smtp.gmail.com"
+  port: "465"
