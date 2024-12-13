@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -61,6 +62,11 @@ func LoadConfig() (*Config, error) {
 		mailConfig       ServerMailAuthConf
 	)
 
+	//подгружаем переменные из .env файла
+	if err := godotenv.Load(".env"); err != nil {
+		return nil, err
+	}
+
 	//получаем из argv
 	pathToConfigDir, nameOfConfigFile = getConfigPathFromARGV()
 
@@ -106,7 +112,7 @@ func LoadConfig() (*Config, error) {
 
 	//заполняем структуру для атвторизации в почте
 	//получаем host и порт сервера smtp
-	if err := viper.UnmarshalKey("auth", &mailConfig); err != nil {
+	if err := viper.UnmarshalKey("mail", &mailConfig); err != nil {
 		return nil, err
 	}
 
