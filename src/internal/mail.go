@@ -12,29 +12,35 @@ import (
 // почта с которой будем отправлять писаьма с просьбой подтвердить email
 type Mail struct {
 	Config config.ServerMailAuthConf
-	Logger slog.Logger
+	Logger *slog.Logger
 }
 
-func NewMailSender(config config.ServerMailAuthConf) *Mail {
+func NewMailSender(config config.ServerMailAuthConf, log *slog.Logger) *Mail {
 	return &Mail{
 		Config: config,
+		Logger: log,
 	}
 }
 
-func (m *Mail) Send(toEmail, mailBody string) error {
+func (m *Mail) SendMail(toEmail, mailBody string) error {
 
+	//созздаем клиента для отправки письма
 	client, err := makeConnection(m, toEmail)
 	if err != nil {
 		return err
 	}
+	//закрываем клиента
 	defer client.Quit()
 
+	//создаем writerа
 	writer, err := client.Data()
 	if err != nil {
 		return err
 	}
+	//закрываем writer
 	defer writer.Close()
 
+	//отправка письма
 	writer.Write([]byte(mailBody))
 
 	return nil

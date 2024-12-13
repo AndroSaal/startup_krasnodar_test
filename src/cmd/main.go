@@ -23,7 +23,7 @@ func main() {
 	logger.Info("Logger initialized")
 
 	// инициализируем сервис
-	service := internal.NewAuth()
+	service := internal.NewAuth(config, logger)
 	logger.Info("service initialized")
 
 	// инициализируем обработчики
