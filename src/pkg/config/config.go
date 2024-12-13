@@ -38,7 +38,7 @@ type ServerMailAuthConf struct {
 	Login    string
 	Password string
 	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
+	Port     string `yaml:"port"`
 }
 
 func MustLoadConfig() *Config {

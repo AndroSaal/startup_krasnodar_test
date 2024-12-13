@@ -10,6 +10,7 @@ import (
 type Service interface {
 	Loginer
 	Registerer
+	EmailSender
 }
 
 type Loginer interface {
@@ -21,9 +22,14 @@ type Registerer interface {
 	CheckEmail(email string, code int) (bool, error)
 }
 
+type EmailSender interface {
+	SendEmail(email string, code int) error
+}
+
 type Auth struct {
 	//интерфейс уровня репозитория
 	// repo repository.Repository
+	EmailSender 
 }
 
 func NewAuth() *Auth {
@@ -45,3 +51,4 @@ func (a *Auth) CheckEmail(email string, code int) (bool, error) {
 	fmt.Printf("AT CHECK EMAIL")
 	return false, nil
 }
+
