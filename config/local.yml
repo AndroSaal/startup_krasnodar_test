@@ -7,7 +7,7 @@ db:
   sslmode: "disable"
 
 server:
-  port: "8080"
+  port: "8081"
   host: "localhost"
   env: "local"
-  timeout: "10s"
+  timeout: "10h"

@@ -34,9 +34,12 @@ func (s *Server) MustRun() {
 	fi := "transport.Server.MustRun"
 
 	s.logger.Info(fi + ":" + "starting server...")
+	s.logger.Info(fi + ":" + "server started on port " + s.Server.Addr)
+
 	if err := s.Server.ListenAndServe(); err != nil {
 		panic(fi + ":" + "cannot run server: " + err.Error())
 	}
+
 }
 
 // остановка сервера

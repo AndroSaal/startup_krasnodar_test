@@ -26,5 +26,7 @@ func (h *Handler) singUp(c *gin.Context) {
 	}
 
 	//отправляем успешный ответ
-	c.JSON(http.StatusOK, id)
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"id": id,
+	})
 }
