@@ -11,8 +11,9 @@ import (
 
 // конфиг для сервиса
 type Config struct {
-	DBConfig  DBConfig
-	SrvConfig SrvConfig
+	DBConfig   DBConfig
+	SrvConfig  SrvConfig
+	MailConfig ServerMailAuthConf
 }
 
 // конфиг для соединения с БД
@@ -33,6 +34,13 @@ type SrvConfig struct {
 	Timeout time.Duration `yaml:"timeout"`
 }
 
+type ServerMailAuthConf struct {
+	Login    string
+	Password string
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+}
+
 func MustLoadConfig() *Config {
 	//если не полуичлось загрузить конфиг - падаем с паникой
 	if Config, err := LoadConfig(); err != nil {
@@ -50,6 +58,7 @@ func LoadConfig() (*Config, error) {
 		nameOfConfigFile string
 		databaseConfig   DBConfig
 		serverConfig     SrvConfig
+		mailConfig       ServerMailAuthConf
 	)
 
 	//получаем из argv
@@ -95,9 +104,21 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 
+	//заполняем структуру для атвторизации в почте
+	//получаем host и порт сервера smtp
+	if err := viper.UnmarshalKey("auth", &mailConfig); err != nil {
+		return nil, err
+	}
+
+	//получаем пароль и логин для почты, с которой будем посылать письма
+	if mailConfig.Login, mailConfig.Password = getMailCredentials(); mailConfig.Password == "" || mailConfig.Login == "" {
+		return nil, errors.New("mail credentials are empty")
+	}
+
 	return &Config{
-		DBConfig:  databaseConfig,
-		SrvConfig: serverConfig,
+		DBConfig:   databaseConfig,
+		SrvConfig:  serverConfig,
+		MailConfig: mailConfig,
 	}, nil
 
 }
@@ -124,14 +145,18 @@ func getConfigPathFromARGV() (string, string) {
 
 // получение пути к папке с конфигами и имя конфига из ENV
 func getConfigPathFromENV() (string, string) {
-	var (
-		pathToConfigDir  string
-		nameOfConfigFile string
-	)
 
 	//получение из переменных окружения
-	pathToConfigDir = os.Getenv("CONFIG_PATH")
-	nameOfConfigFile = os.Getenv("CONFIG_NAME")
+	pathToConfigDir := os.Getenv("CONFIG_PATH")
+	nameOfConfigFile := os.Getenv("CONFIG_NAME")
 
 	return pathToConfigDir, nameOfConfigFile
+}
+
+func getMailCredentials() (string, string) {
+
+	login := os.Getenv("MAIL_LOGIN")
+	password := os.Getenv("MAIL_PASSWORD")
+
+	return login, password
 }
