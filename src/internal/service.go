@@ -62,15 +62,10 @@ func (a *Auth) Register(user *entities.User) (int, error) {
 		return 0, err
 	}
 
-	id, err := a.RepositoryHandler.AddNewUser(user)
+	id, err := a.RepositoryHandler.AddNewUser(user, code)
 	if err != nil {
 		return 0, err
 	}
 
 	return id, nil
-}
-
-func (a *Auth) VerifyEmail(email string, code int) (bool, error) {
-	fmt.Printf("AT CHECK EMAIL")
-	return false, nil
 }

@@ -9,9 +9,9 @@ import (
 
 // интерфейс для уровня репозитория
 type RepositoryHandler interface {
-	AddNewUser(usr *entities.User) (int, error)
-	GetUserById(userId string) (*entities.User, error)
-	AddCodeForEmail(email, code string) error
+	AddNewUser(usr *entities.User, code int) (int, error)
+	GetUserById(userId int) (*entities.User, error)
+	GetCodeFromEmail(email string, code int) (bool, error)
 }
 
 // имплементация этого интерфейа
@@ -28,14 +28,18 @@ func NewPostgreRepository(cfg config.DBConfig, log *slog.Logger) *PostgreReposit
 	}
 }
 
-func (p *PostgreRepository) AddNewUser(usr *entities.User) (int, error) {
+func (p *PostgreRepository) AddNewUser(usr *entities.User, code int) (int, error) {
+	//TODO: функция добавляет нового юзера в таблицу, добавлет ему код
 	return 0, nil
 }
 
-func (p *PostgreRepository) GetUserById(userId string) (*entities.User, error) {
+func (p *PostgreRepository) GetUserById(userId int) (*entities.User, error) {
+	//TODO: функция возвращает пользователя по id
 	return nil, nil
 }
 
-func (p *PostgreRepository) AddCodeForEmail(email, code string) error {
-	return nil
+func (p *PostgreRepository) GetCodeFromEmail(email string, code int) (bool, error) {
+	//TODO: функция принимает емайл и код, если код совпадает с кодом в таблице юзера
+	//поменять поле isVerifiied на true
+	return false, nil
 }

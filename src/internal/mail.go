@@ -47,6 +47,18 @@ func (m *Mail) SendMail(toEmail, mailBody string) error {
 
 }
 
+func (a *Auth) VerifyEmail(email string, code int) (bool, error) {
+	fmt.Printf("AT CHECK EMAIL")
+
+	isVerified, err := a.RepositoryHandler.GetCodeFromEmail(email, code)
+
+	if err != nil {
+		return false, err
+	}
+
+	return isVerified, nil
+}
+
 func makeConnection(m *Mail, toEmail string) (*smtp.Client, error) {
 	fi := "internal.makeConnection"
 	//аутенстификация серверной почты
