@@ -1,8 +1,41 @@
 package repository
 
-import "github.com/startup_krasnodar_test/src/entities"
+import (
+	"log/slog"
 
-type Repository interface {
-	AddNewUser(usr *entities.User) error
+	"github.com/startup_krasnodar_test/src/entities"
+	"github.com/startup_krasnodar_test/src/pkg/config"
+)
+
+// интерфейс для уровня репозитория
+type RepositoryHandler interface {
+	AddNewUser(usr *entities.User) (int, error)
 	GetUserByEmail(email string) (*entities.User, error)
+	AddCodeForEmail(email, code string) error
+}
+
+// имплементация этого интерфейа
+type PostgreRepository struct {
+	cfg config.DBConfig
+	log *slog.Logger
+}
+
+// конструктор эотй импелментации
+func NewPostgreRepository(cfg config.DBConfig, log *slog.Logger) *PostgreRepository {
+	return &PostgreRepository{
+		cfg: cfg,
+		log: log,
+	}
+}
+
+func (p *PostgreRepository) AddNewUser(usr *entities.User) (int, error) {
+	return 0, nil
+}
+
+func (p *PostgreRepository) GetUserByEmail(email string) (*entities.User, error) {
+	return nil, nil
+}
+
+func (p *PostgreRepository) AddCodeForEmail(email, code string) error {
+	return nil
 }

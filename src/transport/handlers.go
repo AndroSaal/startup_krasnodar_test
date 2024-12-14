@@ -6,10 +6,10 @@ import "github.com/startup_krasnodar_test/src/internal"
 // в ней инкапсулируются вся бизнес-логика и работа
 // с базой данных internal.Service - интерфейс бизнес логики
 type Handler struct {
-	service internal.Service
+	service internal.ServiceHandler
 }
 
-func NewHandler(service internal.Service) *Handler {
+func NewHandler(service internal.ServiceHandler) *Handler {
 	return &Handler{
 		service: service,
 	}

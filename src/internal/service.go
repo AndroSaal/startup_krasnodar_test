@@ -6,10 +6,11 @@ import (
 
 	"github.com/startup_krasnodar_test/src/entities"
 	"github.com/startup_krasnodar_test/src/pkg/config"
+	"github.com/startup_krasnodar_test/src/repository"
 )
 
 // интерфейс сервисного слоя
-type Service interface {
+type ServiceHandler interface {
 	Loginer
 	Registerer
 }
@@ -28,22 +29,19 @@ type EmailSender interface {
 	SendMail(toEmail, mailBody string) error
 }
 
-// func NewService(conf *config.Config, log *slog.Logger) *Service {
-// 	return &Service{
-// 		Auth: NewAuth(conf, log),
-// 	}
-// }
-
+// имплементация интерфейса ServiceHandler
 type Auth struct {
-	//интерфейс уровня репозитория TODO
-	// repo repository.Repository
-	//сущность для отправки писем
+	//интерфейс - уровнь репозитория
+	repository.RepositoryHandler
+
+	//интерфейс - сущность для отправки писем
 	EmailSender
 }
 
 func NewAuth(conf *config.Config, log *slog.Logger) *Auth {
 	return &Auth{
-		EmailSender: NewMailSender(conf.MailConfig, log),
+		EmailSender:       NewMailSender(conf.MailConfig, log),
+		RepositoryHandler: repository.NewPostgreRepository(conf.DBConfig, log),
 	}
 }
 
