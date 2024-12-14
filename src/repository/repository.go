@@ -10,7 +10,7 @@ import (
 // интерфейс для уровня репозитория
 type RepositoryHandler interface {
 	AddNewUser(usr *entities.User) (int, error)
-	GetUserByEmail(email string) (*entities.User, error)
+	GetUserById(userId string) (*entities.User, error)
 	AddCodeForEmail(email, code string) error
 }
 
@@ -32,7 +32,7 @@ func (p *PostgreRepository) AddNewUser(usr *entities.User) (int, error) {
 	return 0, nil
 }
 
-func (p *PostgreRepository) GetUserByEmail(email string) (*entities.User, error) {
+func (p *PostgreRepository) GetUserById(userId string) (*entities.User, error) {
 	return nil, nil
 }
 

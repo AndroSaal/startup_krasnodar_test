@@ -2,11 +2,13 @@ package transport
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/startup_krasnodar_test/src/entities"
 )
 
+// добавление пользователя
 func (h *Handler) singUp(c *gin.Context) {
 	var (
 		user entities.User
@@ -29,4 +31,34 @@ func (h *Handler) singUp(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"id": id,
 	})
+}
+
+// верификация его почты
+func (h *Handler) verifyEmail(c *gin.Context) {
+	var (
+		email string
+		code  string
+	)
+
+	if err := c.BindJSON(&email); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	codeInt, err := strconv.Atoi(code)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	verified, err := h.service.VerifyEmail(email, codeInt)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"verified": verified,
+	})
+}
+
+func (h *Handler) resendEmail(c *gin.Context) {
+
 }

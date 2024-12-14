@@ -3,6 +3,8 @@ package internal
 import (
 	"fmt"
 	"log/slog"
+	"math/rand"
+	"strconv"
 
 	"github.com/startup_krasnodar_test/src/entities"
 	"github.com/startup_krasnodar_test/src/pkg/config"
@@ -21,7 +23,7 @@ type Loginer interface {
 
 type Registerer interface {
 	Register(user *entities.User) (int, error)
-	CheckEmail(email string, code int) (bool, error)
+	VerifyEmail(email string, code int) (bool, error)
 	SendMail(toEmail, mailBody string) error
 }
 
@@ -53,11 +55,22 @@ func (a *Auth) Login(email, password string) (int, error) {
 
 func (a *Auth) Register(user *entities.User) (int, error) {
 	fmt.Printf("AT REGISTER")
-	a.EmailSender.SendMail(user.Email, "test")
-	return 0, nil
+
+	code := (rand.Int() + rand.Int()) % (rand.Int() * 300)
+
+	if err := a.EmailSender.SendMail(user.Email, strconv.Itoa(code)); err != nil {
+		return 0, err
+	}
+
+	id, err := a.RepositoryHandler.AddNewUser(user)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
 
-func (a *Auth) CheckEmail(email string, code int) (bool, error) {
+func (a *Auth) VerifyEmail(email string, code int) (bool, error) {
 	fmt.Printf("AT CHECK EMAIL")
 	return false, nil
 }
