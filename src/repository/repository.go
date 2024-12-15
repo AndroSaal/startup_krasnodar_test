@@ -39,9 +39,32 @@ func NewPostgreRepository(cfg config.DBConfig, log *slog.Logger) *PostgreReposit
 	}
 }
 
+// таблица
+const tableForUsers = "users"
+
+// поля таблицы
+const (
+	conumnUsername = "username"
+	passwordHash   = "password"
+	columnEmail    = "email"
+)
+
+// таблица кодов и верификаций
+const tableForCodes = "codes"
+
+// поля таблиц
+const (
+	columnCode        = "code"
+	columnUser        = "user_id"
+	columnIsVerifiied = "is_verified"
+)
+
+// функция добавляет нового юзера в таблицу, добавлет ему код
+// который отправляется на почту
 func (p *PostgreRepository) AddNewUser(usr *entities.User, code int) (int, error) {
-	//TODO: функция добавляет нового юзера в таблицу, добавлет ему код
-	//который отправляется на почту
+
+	query := fmt.Sprintf("INSERT INTO %s () VALUES ", tableForUsers)
+
 	return 0, nil
 }
 
