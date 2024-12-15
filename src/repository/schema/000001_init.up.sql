@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    username VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL
+    is_email_verified BOOLEAN NOT NULL,
+);
+
+CREATE TABLE IF NOT EXISTS codes (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    email_code INTEGER NOT NULL UNIQUE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+);

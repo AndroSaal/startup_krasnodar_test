@@ -44,9 +44,10 @@ const tableForUsers = "users"
 
 // поля таблицы
 const (
-	conumnUsername = "username"
-	passwordHash   = "password"
-	columnEmail    = "email"
+	conumnUsername    = "username"
+	passwordHash      = "password_hash"
+	columnEmail       = "email"
+	columnIsVerifiied = "is_email_verified"
 )
 
 // таблица кодов и верификаций
@@ -54,16 +55,15 @@ const tableForCodes = "codes"
 
 // поля таблиц
 const (
-	columnCode        = "code"
-	columnUser        = "user_id"
-	columnIsVerifiied = "is_verified"
+	columnCode = "code"
+	columnUser = "user_id"
 )
 
 // функция добавляет нового юзера в таблицу, добавлет ему код
 // который отправляется на почту
 func (p *PostgreRepository) AddNewUser(usr *entities.User, code int) (int, error) {
 
-	query := fmt.Sprintf("INSERT INTO %s () VALUES ", tableForUsers)
+	query := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES ", tableForUsers, conumnUsername, passwordHash, columnEmail)
 
 	return 0, nil
 }
