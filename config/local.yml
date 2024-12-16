@@ -1,8 +1,8 @@
 db:
   username: "postgres"
   password: "qwerty"
-  host: "host.docker.internal"
-  port: "5435"
+  host: "localhost"
+  port: "5436"
   dbname: "postgres"
   sslmode: "disable"
 
