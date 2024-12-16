@@ -42,11 +42,6 @@ func (h *Handler) verifyEmail(c *gin.Context) {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
 
-	// codeInt, err := strconv.Atoi(code)
-	// if err != nil {
-	// 	newErrorResponse(c, http.StatusBadRequest, err.Error())
-	// }
-
 	verified, err := h.service.VerifyEmail(ver.Id, ver.Code)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())

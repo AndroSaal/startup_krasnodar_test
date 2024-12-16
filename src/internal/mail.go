@@ -9,6 +9,19 @@ import (
 	"github.com/startup_krasnodar_test/src/pkg/config"
 )
 
+func (a *Auth) VerifyEmail(id int, code string) (bool, error) {
+	fi := "internal.Auth.VerifyEmail"
+
+	isVerified, err := a.RepositoryHandler.GetCodeFromEmail(id, code)
+
+	if err != nil {
+		a.logger.Debug(fmt.Sprintf("%s: %s", fi, err.Error()))
+		return false, err
+	}
+
+	return isVerified, nil
+}
+
 // почта с которой будем отправлять писаьма с просьбой подтвердить email
 type Mail struct {
 	Config config.ServerMailAuthConf
@@ -48,18 +61,6 @@ func (m *Mail) SendMail(toEmail, mailBody string) error {
 
 	return nil
 
-}
-
-func (a *Auth) VerifyEmail(id int, code string) (bool, error) {
-	fmt.Printf("AT CHECK EMAIL")
-
-	isVerified, err := a.RepositoryHandler.GetCodeFromEmail(id, code)
-
-	if err != nil {
-		return false, err
-	}
-
-	return isVerified, nil
 }
 
 func makeConnection(m *Mail, toEmail string) (*smtp.Client, error) {

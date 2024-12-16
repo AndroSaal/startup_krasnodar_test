@@ -57,7 +57,6 @@ func (a *Auth) Login(email, password string) (int, error) {
 
 func (a *Auth) Register(user *entities.User) (int, error) {
 	fi := "internal.Auth.Reister"
-	fmt.Printf("AT REGISTER")
 
 	code := generateCode()
 
