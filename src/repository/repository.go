@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"log/slog"
+	"strconv"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/startup_krasnodar_test/src/entities"
@@ -40,32 +41,62 @@ func NewPostgreRepository(cfg config.DBConfig, log *slog.Logger) *PostgreReposit
 }
 
 // таблица
-// const tableForUsers = "users"
+const tableForUsers = "users"
 
 // поля таблицы
-// const (
-// 	conumnUsername    = "username"
-// 	passwordHash      = "password_hash"
-// 	columnEmail       = "email"
-// 	columnIsVerifiied = "is_email_verified"
-// )
+const (
+	columnUserId      = "id"
+	columnEmail       = "email"
+	conumnUsername    = "username"
+	passwordHash      = "password_hash"
+	columnIsVerifiied = "is_email_verified"
+)
 
 // таблица кодов и верификаций
-// const tableForCodes = "codes"
+const tableForCodes = "codes"
 
 // поля таблиц
-// const (
-// 	columnCode = "email_code"
-// 	columnUser = "user_id"
-// )
+const (
+	columnCode = "email_code"
+	columnUser = "user_id"
+)
 
 // функция добавляет нового юзера в таблицу, добавлет ему код
 // который отправляется на почту
 func (p *PostgreRepository) AddNewUser(usr *entities.User, code int) (int, error) {
 
-	// query := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES ", tableForUsers, conumnUsername, passwordHash, columnEmail)
+	//транзакция начинается
+	transaction, err := p.db.Begin()
 
-	return 0, nil
+	if err != nil {
+		transaction.Rollback()
+		return 0, err
+	}
+
+	//формируем запрос к БД для добавления новой записи в таблицу users
+	queryAddToUsrsTable := fmt.Sprintf("INSERT INTO %s (%s, %s, %s) VALUES ($1, $2, $3) RETURNING %s",
+		tableForUsers, conumnUsername, passwordHash, columnEmail, columnUserId)
+
+	//выполняем запрос
+	row := transaction.QueryRow(queryAddToUsrsTable, usr.Username, usr.Password_hash, usr.Email)
+
+	//получаем id новой записи
+	if err := row.Scan(&usr.Id); err != nil {
+		transaction.Rollback()
+		return 0, err
+	}
+
+	//формируем запрос к БД для добавления новой записи в таблицу codes
+	queryAddToCodesTable := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES ($1, $2)",
+		tableForCodes, columnCode, strconv.Itoa(usr.Id))
+
+	//ошибка - откат
+	if _, err := transaction.Exec(queryAddToCodesTable, code); err != nil {
+		transaction.Rollback()
+		return 0, err
+	}
+
+	return usr.Id, transaction.Commit()
 }
 
 func (p *PostgreRepository) GetUserById(userId int) (*entities.User, error) {
