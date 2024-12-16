@@ -105,8 +105,37 @@ func (p *PostgreRepository) GetUserById(userId int) (*entities.User, error) {
 	return nil, nil
 }
 
+// функция принимает емайл и код, если код совпадает с кодом в таблице кодов
+// поменять поле isVerifiied в таблице юзеров на true
 func (p *PostgreRepository) GetCodeFromEmail(id int, code string) (bool, error) {
-	//TODO: функция принимает емайл и код, если код совпадает с кодом в таблице юзера
-	//поменять поле isVerifiied на true
-	return false, nil
+	fi := "repository.PostgreRepository.GetCodeFromEmail"
+
+	var (
+		codeFromDB string
+	)
+	//формирование запроса к базе
+	querySelectCode := fmt.Sprintf(`SELECT %s FROM %s WHERE %s = $1`,
+		columnCode, tableForCodes, columnUser)
+
+	//выполняем запрос, получаем запись
+	row := p.db.QueryRow(querySelectCode, id)
+
+	if err := row.Scan(&codeFromDB); err != nil {
+		p.log.Debug("%s: %v", fi, err)
+	}
+
+	if codeFromDB == code {
+		//формируем текст запроса
+		queryToAddVerification := fmt.Sprintf(`UPDATE %s SET %s = true WHERE %s = $1`,
+			tableForUsers, columnIsVerifiied, columnUserId)
+
+		//выполняем запрос
+		if _, err := p.db.Exec(queryToAddVerification, id); err != nil {
+			p.log.Debug("%s: %v", fi, err)
+			return false, err
+		}
+		return true, nil
+	} else {
+		return false, nil
+	}
 }

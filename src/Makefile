@@ -34,7 +34,7 @@ migr_up :
 	migrate -path $(MIGRATIONSDIR) -database "$(DB_DRIVE)://$(DB_USER):$(DB_PASS)@$(DB_IP):$(DB_PORT)/$(DB_NAME)?$(DB_OPT)" -verbose up
 
 migr_down :
-	migrate -path $(MIGRATIONSDIR) -database "$(DB_DRIVE)://$(DB_USER):$(DB_PASS)@$(DB_IP):$(DB_PORT)/$(DB_NAME)?$(DB_OPT)" -verbose up
+	migrate -path $(MIGRATIONSDIR) -database "$(DB_DRIVE)://$(DB_USER):$(DB_PASS)@$(DB_IP):$(DB_PORT)/$(DB_NAME)?$(DB_OPT)" -verbose down
 
 clear : 
 	rm -rf .bin
