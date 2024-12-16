@@ -24,13 +24,16 @@ docker-up :
 	chmod +x docker/run.sh
 	sh -C docker/run.sh
 
+docker-down:
+	docker container stop postgres-email-container
+
 migr_init : docker-up
 	migrate create -ext sql -dir $(MIGRATIONSDIR) -seq init
 	
-migr_up : docker-up
+migr_up :
 	migrate -path $(MIGRATIONSDIR) -database "$(DB_DRIVE)://$(DB_USER):$(DB_PASS)@$(DB_IP):$(DB_PORT)/$(DB_NAME)?$(DB_OPT)" -verbose up
 
-migr_down : migr_up
+migr_down :
 	migrate -path $(MIGRATIONSDIR) -database "$(DB_DRIVE)://$(DB_USER):$(DB_PASS)@$(DB_IP):$(DB_PORT)/$(DB_NAME)?$(DB_OPT)" -verbose up
 
 clear : 
