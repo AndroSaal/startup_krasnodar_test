@@ -23,10 +23,12 @@ func NewMailSender(config config.ServerMailAuthConf, log *slog.Logger) *Mail {
 }
 
 func (m *Mail) SendMail(toEmail, mailBody string) error {
+	fi := "internal.Mail.SendMail"
 
 	//созздаем клиента для отправки письма
 	client, err := makeConnection(m, toEmail)
 	if err != nil {
+		m.Logger.Debug(fmt.Sprintf("%s: %s", fi, err.Error()))
 		return err
 	}
 	//закрываем клиента
@@ -35,6 +37,7 @@ func (m *Mail) SendMail(toEmail, mailBody string) error {
 	//создаем writerа
 	writer, err := client.Data()
 	if err != nil {
+		m.Logger.Debug(fmt.Sprintf("%s: %s", fi, err.Error()))
 		return err
 	}
 	//закрываем writer
@@ -78,6 +81,7 @@ func makeConnection(m *Mail, toEmail string) (*smtp.Client, error) {
 	//создание smtp клиента
 	client, err := smtp.NewClient(conn, m.Config.Host)
 	if err != nil {
+
 		return nil, err
 	}
 

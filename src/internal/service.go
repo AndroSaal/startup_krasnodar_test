@@ -38,12 +38,14 @@ type Auth struct {
 
 	//интерфейс - сущность для отправки писем
 	EmailSender
+	logger *slog.Logger
 }
 
 func NewAuth(conf *config.Config, log *slog.Logger) *Auth {
 	return &Auth{
 		EmailSender:       NewMailSender(conf.MailConfig, log),
 		RepositoryHandler: repository.NewPostgreRepository(conf.DBConfig, log),
+		logger:            log,
 	}
 }
 
@@ -54,16 +56,19 @@ func (a *Auth) Login(email, password string) (int, error) {
 }
 
 func (a *Auth) Register(user *entities.User) (int, error) {
+	fi := "internal.Auth.Reister"
 	fmt.Printf("AT REGISTER")
 
 	code := (rand.Int() + rand.Int()) % (rand.Int() * 300)
 
 	if err := a.EmailSender.SendMail(user.Email, strconv.Itoa(code)); err != nil {
+		a.logger.Debug("%s: Error sending email: %v", fi, err)
 		return 0, err
 	}
 
 	id, err := a.RepositoryHandler.AddNewUser(user, code)
 	if err != nil {
+		a.logger.Debug("%s: Error adding new user: %v", fi, err)
 		return 0, err
 	}
 
