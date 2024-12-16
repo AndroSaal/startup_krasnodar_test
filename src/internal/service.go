@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"math/rand"
-	"strconv"
+	"time"
 
 	"github.com/startup_krasnodar_test/src/entities"
 	"github.com/startup_krasnodar_test/src/pkg/config"
@@ -23,7 +23,7 @@ type Loginer interface {
 
 type Registerer interface {
 	Register(user *entities.User) (int, error)
-	VerifyEmail(email string, code int) (bool, error)
+	VerifyEmail(id int, code string) (bool, error)
 	SendMail(toEmail, mailBody string) error
 }
 
@@ -59,9 +59,9 @@ func (a *Auth) Register(user *entities.User) (int, error) {
 	fi := "internal.Auth.Reister"
 	fmt.Printf("AT REGISTER")
 
-	code := (rand.Int() + rand.Int()) % (rand.Int() * 300)
+	code := generateCode()
 
-	if err := a.EmailSender.SendMail(user.Email, strconv.Itoa(code)); err != nil {
+	if err := a.EmailSender.SendMail(user.Email, code); err != nil {
 		a.logger.Debug("%s: Error sending email: %v", fi, err)
 		return 0, err
 	}
@@ -73,4 +73,28 @@ func (a *Auth) Register(user *entities.User) (int, error) {
 	}
 
 	return id, nil
+}
+
+func generateCode() string {
+	//генерируем семя для генератора
+	// seed := [32]byte{'s', 'o', 'm', 'e', 'k', 'e', 'y', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f'}
+
+	// // инициализируем новый генератор ChaCha8
+	// generator := rand.NewChaCha8(seed)
+
+	rand.Seed(time.Now().UnixNano())
+
+	// Генерация четырех случайных чисел от 0 до 9
+	code := []int{
+		rand.Intn(10),
+		rand.Intn(10),
+		rand.Intn(10),
+		rand.Intn(10),
+	}
+
+	// Соединение чисел в одну строку
+	finalcode := fmt.Sprintf("%d%d%d%d", code[0], code[1], code[2], code[3])
+
+	return finalcode
+
 }

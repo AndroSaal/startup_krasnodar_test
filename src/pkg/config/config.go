@@ -63,7 +63,7 @@ func LoadConfig() (*Config, error) {
 	)
 
 	//подгружаем переменные из .env файла
-	if err := godotenv.Load(".env"); err != nil {
+	if err := godotenv.Load(".env/.app.env"); err != nil {
 		return nil, err
 	}
 

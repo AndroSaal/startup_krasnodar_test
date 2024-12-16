@@ -7,3 +7,8 @@ type User struct {
 	Email         string `json:"email" binding:"required"`
 	EmailVerified bool
 }
+
+type EmailVerification struct {
+	Id   int    `json:"userId" binding:"required"`
+	Code string `json:"code" binding:"required"`
+}

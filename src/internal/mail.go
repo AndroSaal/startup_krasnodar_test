@@ -50,10 +50,10 @@ func (m *Mail) SendMail(toEmail, mailBody string) error {
 
 }
 
-func (a *Auth) VerifyEmail(email string, code int) (bool, error) {
+func (a *Auth) VerifyEmail(id int, code string) (bool, error) {
 	fmt.Printf("AT CHECK EMAIL")
 
-	isVerified, err := a.RepositoryHandler.GetCodeFromEmail(email, code)
+	isVerified, err := a.RepositoryHandler.GetCodeFromEmail(id, code)
 
 	if err != nil {
 		return false, err

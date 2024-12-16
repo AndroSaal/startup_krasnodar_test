@@ -3,18 +3,19 @@ package repository
 import (
 	"fmt"
 	"log/slog"
-	"strconv"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/startup_krasnodar_test/src/entities"
 	"github.com/startup_krasnodar_test/src/pkg/config"
+
+	_ "github.com/lib/pq"
 )
 
 // интерфейс для уровня репозитория
 type RepositoryHandler interface {
-	AddNewUser(usr *entities.User, code int) (int, error)
+	AddNewUser(usr *entities.User, code string) (int, error)
 	GetUserById(userId int) (*entities.User, error)
-	GetCodeFromEmail(email string, code int) (bool, error)
+	GetCodeFromEmail(id int, code string) (bool, error)
 }
 
 // имплементация этого интерфейа
@@ -47,7 +48,7 @@ const tableForUsers = "users"
 const (
 	columnUserId      = "id"
 	columnEmail       = "email"
-	conumnUsername    = "username"
+	columnUsername    = "username"
 	passwordHash      = "password_hash"
 	columnIsVerifiied = "is_email_verified"
 )
@@ -63,7 +64,7 @@ const (
 
 // функция добавляет нового юзера в таблицу, добавлет ему код
 // который отправляется на почту
-func (p *PostgreRepository) AddNewUser(usr *entities.User, code int) (int, error) {
+func (p *PostgreRepository) AddNewUser(usr *entities.User, code string) (int, error) {
 
 	//транзакция начинается
 	transaction, err := p.db.Begin()
@@ -74,11 +75,11 @@ func (p *PostgreRepository) AddNewUser(usr *entities.User, code int) (int, error
 	}
 
 	//формируем запрос к БД для добавления новой записи в таблицу users
-	queryAddToUsrsTable := fmt.Sprintf("INSERT INTO %s (%s, %s, %s) VALUES ($1, $2, $3) RETURNING %s",
-		tableForUsers, conumnUsername, passwordHash, columnEmail, columnUserId)
+	queryAddToUsrsTable := fmt.Sprintf(`INSERT INTO %s (%s, %s, %s, %s) VALUES ($1, $2, $3, $4) RETURNING %s`,
+		tableForUsers, columnUsername, passwordHash, columnEmail, columnIsVerifiied, columnUserId)
 
 	//выполняем запрос
-	row := transaction.QueryRow(queryAddToUsrsTable, usr.Username, usr.Password_hash, usr.Email)
+	row := transaction.QueryRow(queryAddToUsrsTable, usr.Username, usr.Password_hash, usr.Email, 0)
 
 	//получаем id новой записи
 	if err := row.Scan(&usr.Id); err != nil {
@@ -87,11 +88,11 @@ func (p *PostgreRepository) AddNewUser(usr *entities.User, code int) (int, error
 	}
 
 	//формируем запрос к БД для добавления новой записи в таблицу codes
-	queryAddToCodesTable := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES ($1, $2)",
-		tableForCodes, columnCode, strconv.Itoa(usr.Id))
+	queryAddToCodesTable := fmt.Sprintf(`INSERT INTO %s (%s, %s) VALUES ($1, $2)`,
+		tableForCodes, columnCode, columnUser)
 
 	//ошибка - откат
-	if _, err := transaction.Exec(queryAddToCodesTable, code); err != nil {
+	if _, err := transaction.Exec(queryAddToCodesTable, code, usr.Id); err != nil {
 		transaction.Rollback()
 		return 0, err
 	}
@@ -104,7 +105,7 @@ func (p *PostgreRepository) GetUserById(userId int) (*entities.User, error) {
 	return nil, nil
 }
 
-func (p *PostgreRepository) GetCodeFromEmail(email string, code int) (bool, error) {
+func (p *PostgreRepository) GetCodeFromEmail(id int, code string) (bool, error) {
 	//TODO: функция принимает емайл и код, если код совпадает с кодом в таблице юзера
 	//поменять поле isVerifiied на true
 	return false, nil

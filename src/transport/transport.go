@@ -2,7 +2,6 @@ package transport
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/startup_krasnodar_test/src/entities"
@@ -36,20 +35,19 @@ func (h *Handler) singUp(c *gin.Context) {
 // верификация его почты
 func (h *Handler) verifyEmail(c *gin.Context) {
 	var (
-		email string
-		code  string
+		ver entities.EmailVerification
 	)
 
-	if err := c.BindJSON(&email); err != nil {
+	if err := c.BindJSON(&ver); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
 
-	codeInt, err := strconv.Atoi(code)
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-	}
+	// codeInt, err := strconv.Atoi(code)
+	// if err != nil {
+	// 	newErrorResponse(c, http.StatusBadRequest, err.Error())
+	// }
 
-	verified, err := h.service.VerifyEmail(email, codeInt)
+	verified, err := h.service.VerifyEmail(ver.Id, ver.Code)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
